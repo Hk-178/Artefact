@@ -70,6 +70,7 @@ import com.chethan616.clearpdf.ui.glass.BarGlyphButton
 import com.chethan616.clearpdf.ui.glass.GlassIcon
 import com.chethan616.clearpdf.ui.glass.GlassMenu
 import com.chethan616.clearpdf.ui.glass.GlassMenuItem
+import com.chethan616.clearpdf.ui.glass.MenuTrail
 import com.chethan616.clearpdf.ui.glass.GlassMotion
 import com.chethan616.clearpdf.ui.glass.GlassPill
 import com.chethan616.clearpdf.ui.glass.MinTouch

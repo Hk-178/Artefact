@@ -274,7 +274,7 @@ fun AppViewModel.runQuickTool(doc: OpenDocument, tool: QuickTool) {
 fun CustomizeDock(vm: AppViewModel, onDone: () -> Unit) {
     val c = pdfColors
     val prefs = vm.quickToolbar
-    val slots = toolbarSlots(LocalConfiguration.current.screenWidthDp, c.clean)
+    val slots = toolbarSlots(LocalConfiguration.current.screenWidthDp, com.chethan616.clearpdf.ui.theme.clear.clean)
     val bar = remember { prefs.bar.take(slots).toMutableStateList() }
     // every tool that could sit on the dock, in the app's own order: never arranged here
     val rest = QuickTool.entries.filter { it.appliesTo(ToolDocKind.Pdf) && it !in bar }
