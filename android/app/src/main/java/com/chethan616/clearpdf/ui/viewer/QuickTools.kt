@@ -180,7 +180,9 @@ fun moreTools(kind: ToolDocKind, arranged: List<QuickTool>, slots: Int): List<Qu
         ToolDocKind.Pdf -> ToolGroup.entries.flatMap { group ->
             QuickTool.entries.filter { it.group == group && it !in dock && it !in HeaderOwnedTools }
         }
-        else -> QuickTool.barFor(kind, emptyList()).filter { it !in dock }
+        // an office bar does not fit a narrow dock: the header keeps what is left, so the two
+        // lists never show the same tool
+        else -> QuickTool.barFor(kind, emptyList()).filter { it !in dock && it !in headerTools(kind, dock) }
     }
 }
 

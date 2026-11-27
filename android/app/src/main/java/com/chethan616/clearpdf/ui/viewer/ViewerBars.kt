@@ -370,9 +370,9 @@ fun QuickToolbar(
     // Leave room for a readable label and keep the remaining actions in More.
     val slots = toolbarSlots(width, clear.clean)
     val shown = tools.take(slots)
-    // The four-dot control is an anchored action menu, not another bottom sheet. Keep the
-    // tools the bar could not hold in the same menu so every action remains reachable on phones.
-    val overflow = remember(tools, more, slots) { (tools.drop(slots) + more).distinct() }
+    // The four-dot control is an anchored action menu, not another bottom sheet. It holds what
+    // the dock has no room for, already worked out by the one layout both menus share.
+    val overflow = remember(more) { more.distinct() }
     var menuAt by remember { mutableStateOf<Rect?>(null) }
     var moreRect by remember { mutableStateOf(Rect.Zero) }
     val turn by androidx.compose.animation.core.animateFloatAsState(if (menuAt != null) 45f else 0f, GlassMotion.morph(), label = "more")

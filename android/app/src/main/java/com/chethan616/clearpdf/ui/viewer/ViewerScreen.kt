@@ -478,17 +478,19 @@ fun ViewerScreen(vm: AppViewModel, doc: OpenDocument) {
                     if (vm.wordEditing == doc) {
                         WordEditDock(vm, doc)
                     } else if (ctl.tool == ViewerTool.None) {
+                        // one layout for the dock, the header's rows and More: no tool in two places
+                        val layout = toolLayout(
+                            docKind(doc), vm.quickToolbar.bar,
+                            toolbarSlots(
+                                androidx.compose.ui.platform.LocalConfiguration.current.screenWidthDp,
+                                com.chethan616.clearpdf.ui.theme.clear.clean,
+                            ),
+                        )
                         QuickToolbar(
-                            tools = QuickTool.barFor(doc, vm.quickToolbar.bar),
+                            tools = layout.dock,
                             onTool = { vm.runQuickTool(doc, it) },
                             labels = vm.toolbarLabels,
-                            more = moreTools(
-                                docKind(doc), vm.quickToolbar.bar,
-                                toolbarSlots(
-                                    androidx.compose.ui.platform.LocalConfiguration.current.screenWidthDp,
-                                    com.chethan616.clearpdf.ui.theme.clear.clean,
-                                ),
-                            ),
+                            more = layout.more,
                         )
                     } else {
                         ToolSubToolbar(vm, doc)
