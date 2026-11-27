@@ -4,6 +4,7 @@ import com.chethan616.clearpdf.ui.viewer.QuickTool
 import com.chethan616.clearpdf.ui.viewer.QuickToolbarPrefs
 import com.chethan616.clearpdf.ui.viewer.ToolDocKind
 import com.chethan616.clearpdf.ui.viewer.ToolGroup
+import com.chethan616.clearpdf.ui.viewer.appliesTo
 import com.chethan616.clearpdf.ui.viewer.toolLayout
 import com.chethan616.clearpdf.ui.viewer.toolbarSlots
 import org.junit.Assert.assertEquals
