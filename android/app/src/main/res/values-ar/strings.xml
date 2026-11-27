@@ -10,6 +10,9 @@
     <string name="settings_language_system">لغة النظام (%1$s)</string>
     <string name="settings_open_in_night_mode">افتح ملفات PDF والمستندات دائمًا بالوضع الليلي</string>
     <string name="settings_open_in_night_mode_body">افتح كل ملف PDF ومستند مع تفعيل الوضع الليلي.</string>
+    <!-- bars: a name under each tool's glyph -->
+    <string name="settings_toolbar_labels">تسميات شريط الأدوات</string>
+    <string name="settings_toolbar_labels_body">ضع اسم كل أداة أسفل رمزها في الأشرطة.</string>
     <string name="open_with">فتح باستخدام Artefact</string>
     <string name="common_ok">موافق</string>
     <string name="common_cancel">إلغاء</string>
@@ -46,7 +49,6 @@
     <string name="common_tool_crop">اقتصاص الصفحات</string>
     <string name="common_tool_fill_sign">تعبئة وتوقيع</string>
     <string name="common_tool_scan">مسح ضوئي</string>
-    <string name="common_tool_more_tools">المزيد من الأدوات</string>
     <string name="common_tool_recognize_text">التعرّف على النص</string>
     <string name="common_tool_comment">تعليق</string>
     <string name="common_tool_highlight">تمييز</string>
@@ -317,7 +319,6 @@
     <string name="voice_open_settings">فتح الإعدادات</string>
     <string name="voice_not_now">ليس الآن</string>
     <string name="pages_title">الصفحات</string>
-    <string name="pages_select">تحديد الصفحات</string>
     <plurals name="pages_selected_count">
         <item quantity="zero">لم تُحدّد أي صفحة</item>
         <item quantity="one">حُدّدت صفحة واحدة</item>
@@ -331,6 +332,8 @@
     <string name="pages_extract">استخراج</string>
     <string name="pages_rotate_left">يسار</string>
     <string name="pages_rotate_right">يمين</string>
+    <!-- Translator note: Edit PDF, as the pages bar names it. Keep it short. -->
+    <string name="pages_edit">تحرير</string>
     <string name="pages_insert">إدراج</string>
     <string name="pages_at_start">في البداية</string>
     <string name="pages_at_end">في النهاية</string>
@@ -431,6 +434,10 @@
     <string name="sheet_single_page">صفحة واحدة</string>
     <string name="sheet_reading_mode">وضع القراءة</string>
     <string name="sheet_night_mode">الوضع الليلي</string>
+
+    <!-- More menu: the small headings that group its rows -->
+    <string name="menu_section_page">صفحة</string>
+    <string name="menu_section_file">ملف</string>
     <string name="sheet_tab_contents">الفهرس</string>
     <string name="sheet_tab_bookmarks">الإشارات المرجعية</string>
     <string name="sheet_no_contents">لا يحتوي هذا المستند على فهرس.</string>
@@ -442,7 +449,6 @@
     <string name="sheet_bookmark_removed">تمت إزالة الإشارة المرجعية %1$s</string>
     <string name="sheet_delete_all">حذف الكل</string>
     <string name="sheet_page">الصفحة %1$d</string>
-    <string name="sheet_customize_toolbar">تخصيص شريط الأدوات</string>
     <plurals name="sheet_size_bytes">
         <item quantity="zero">صفر بايت</item>
         <item quantity="one">بايت واحد</item>
@@ -513,19 +519,13 @@
     <string name="toolbar_label_recognize">التعرّف</string>
     <string name="toolbar_label_add_text">إضافة نص</string>
     <string name="toolbar_tool_text">نص</string>
-    <string name="toolbar_customize">تخصيص شريط الأدوات</string>
     <string name="toolbar_save">حفظ شريط الأدوات</string>
     <plurals name="toolbar_customize_hint">
-        <item quantity="zero">اسحب الأدوات بين شريط الأدوات والأدوات الإضافية. يتسع الشريط لـ %1$d.</item>
-        <item quantity="one">اسحب الأدوات بين شريط الأدوات والأدوات الإضافية. يتسع الشريط لـ %1$d.</item>
-        <item quantity="two">اسحب الأدوات بين شريط الأدوات والأدوات الإضافية. يتسع الشريط لـ %1$d.</item>
-        <item quantity="few">اسحب الأدوات بين شريط الأدوات والأدوات الإضافية. يتسع الشريط لـ %1$d.</item>
-        <item quantity="many">اسحب الأدوات بين شريط الأدوات والأدوات الإضافية. يتسع الشريط لـ %1$d.</item>
-        <item quantity="other">اسحب الأدوات بين شريط الأدوات والأدوات الإضافية. يتسع الشريط لـ %1$d.</item>
+        <item quantity="one">اسحب لإعادة الترتيب. يتسع الشريط لـ %1$d.</item>
+        <item quantity="other">اسحب لإعادة الترتيب. يتسع الشريط لـ %1$d.</item>
     </plurals>
     <string name="toolbar_section_toolbar">شريط الأدوات</string>
     <string name="toolbar_tool_on_bar">%1$s، في شريط الأدوات</string>
-    <string name="toolbar_tool_in_more_tools">%1$s، في المزيد من الأدوات</string>
     <string name="toolbar_strikethrough">شطب</string>
     <string name="toolbar_no_text_to_mark">لا يوجد نص قابل للتحديد في هذه الصفحة. استخدم التعرّف على النص أولًا من «المزيد من الأدوات».</string>
     <string name="toolbar_draw_freeform">رسم حر</string>
@@ -1297,4 +1297,15 @@
     <string name="settings_reduce_transparency_detail">يصبح الزجاج والأشرطة العائمة معتمًا، لا يظهر شيء من خلفها</string>
     <string name="qr_scanner">ماسح رموز QR</string>
     <string name="qr_scan_prompt">وجّه الكاميرا نحو رمز QR</string>
+    <!-- The fixed sections of a PDF's More list -->
+    <string name="tool_group_edit">التحرير والتمييز</string>
+    <string name="tool_group_pages">الصفحات</string>
+    <string name="tool_group_convert">التحويل والمشاركة</string>
+    <string name="tool_group_security">الأمان</string>
+    <!-- The dock's round button: the tools the dock has no room for -->
+    <string name="common_tool_more">المزيد</string>
+    <!-- The dock's editor in Settings, and the tools it does not hold -->
+    <string name="settings_customize_dock">تخصيص الشريط</string>
+    <string name="settings_off_the_dock">خارج الشريط</string>
+    <string name="toolbar_tool_off_dock">%1$s، خارج الشريط</string>
 </resources>

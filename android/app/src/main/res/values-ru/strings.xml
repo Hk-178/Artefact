@@ -5,6 +5,9 @@
     <string name="settings_language_system">Язык системы (%1$s)</string>
     <string name="settings_open_in_night_mode">Всегда открывать PDF и документы в ночном режиме</string>
     <string name="settings_open_in_night_mode_body">Открывать каждый PDF и документ с включённым ночным режимом.</string>
+    <!-- bars: a name under each tool's glyph -->
+    <string name="settings_toolbar_labels">Подписи на панели</string>
+    <string name="settings_toolbar_labels_body">Показывать название каждого инструмента под значком.</string>
     <string name="open_with">Открыть в Artefact</string>
     <string name="common_ok">ОК</string>
     <string name="common_cancel">Отмена</string>
@@ -41,7 +44,6 @@
     <string name="common_tool_crop">Обрезать страницы</string>
     <string name="common_tool_fill_sign">Заполнить и подписать</string>
     <string name="common_tool_scan">Сканировать</string>
-    <string name="common_tool_more_tools">Другие инструменты</string>
     <string name="common_tool_recognize_text">Распознать текст</string>
     <string name="common_tool_comment">Комментарий</string>
     <string name="common_tool_highlight">Выделить</string>
@@ -305,7 +307,6 @@
     <string name="voice_open_settings">Открыть настройки</string>
     <string name="voice_not_now">Не сейчас</string>
     <string name="pages_title">Страницы</string>
-    <string name="pages_select">Выбрать страницы</string>
     <plurals name="pages_selected_count">
         <item quantity="one">Выбрана %1$d</item>
         <item quantity="few">Выбрано %1$d</item>
@@ -317,6 +318,8 @@
     <string name="pages_extract">Извлечь</string>
     <string name="pages_rotate_left">Влево</string>
     <string name="pages_rotate_right">Вправо</string>
+    <!-- Translator note: Edit PDF, as the pages bar names it. Keep it short. -->
+    <string name="pages_edit">Изменить</string>
     <string name="pages_insert">Вставить</string>
     <string name="pages_at_start">В начало</string>
     <string name="pages_at_end">В конец</string>
@@ -418,6 +421,10 @@
     <string name="sheet_single_page">Одна страница</string>
     <string name="sheet_reading_mode">Режим чтения</string>
     <string name="sheet_night_mode">Ночной режим</string>
+
+    <!-- More menu: the small headings that group its rows -->
+    <string name="menu_section_page">Страница</string>
+    <string name="menu_section_file">Файл</string>
     <string name="sheet_tab_contents">Оглавление</string>
     <string name="sheet_tab_bookmarks">Закладки</string>
     <string name="sheet_no_contents">В этом документе нет оглавления.</string>
@@ -429,7 +436,6 @@
     <string name="sheet_bookmark_removed">Закладка «%1$s» удалена</string>
     <string name="sheet_delete_all">Удалить все</string>
     <string name="sheet_page">Страница %1$d</string>
-    <string name="sheet_customize_toolbar">Настроить панель</string>
     <plurals name="sheet_size_bytes">
         <item quantity="one">%1$d байт</item>
         <item quantity="few">%1$d байта</item>
@@ -496,17 +502,13 @@
     <string name="toolbar_label_recognize">Распознать</string>
     <string name="toolbar_label_add_text">Добавить текст</string>
     <string name="toolbar_tool_text">Текст</string>
-    <string name="toolbar_customize">Настроить панель</string>
     <string name="toolbar_save">Сохранить панель</string>
     <plurals name="toolbar_customize_hint">
-        <item quantity="one">Перетаскивайте инструменты между панелью и «Другими инструментами». На панели помещается %1$d.</item>
-        <item quantity="few">Перетаскивайте инструменты между панелью и «Другими инструментами». На панели помещается %1$d.</item>
-        <item quantity="many">Перетаскивайте инструменты между панелью и «Другими инструментами». На панели помещается %1$d.</item>
-        <item quantity="other">Перетаскивайте инструменты между панелью и «Другими инструментами». На панели помещается %1$d.</item>
+        <item quantity="one">Перетащите, чтобы изменить порядок. На панели: %1$d.</item>
+        <item quantity="other">Перетащите, чтобы изменить порядок. На панели: %1$d.</item>
     </plurals>
     <string name="toolbar_section_toolbar">Панель</string>
     <string name="toolbar_tool_on_bar">%1$s, на панели</string>
-    <string name="toolbar_tool_in_more_tools">%1$s, в «Других инструментах»</string>
     <string name="toolbar_strikethrough">Зачеркнуть</string>
     <string name="toolbar_no_text_to_mark">На этой странице нет текста для пометок. Сначала распознайте текст («Другие инструменты» ▸ «Распознать текст»).</string>
     <string name="toolbar_draw_freeform">Рисовать от руки</string>
@@ -1258,4 +1260,15 @@
     <string name="settings_reduce_transparency_detail">Стекло и плавающие панели становятся непрозрачными, ничего не просвечивает</string>
     <string name="qr_scanner">QR-сканер</string>
     <string name="qr_scan_prompt">Наведите камеру на QR-код</string>
+    <!-- The fixed sections of a PDF's More list -->
+    <string name="tool_group_edit">Правка и пометки</string>
+    <string name="tool_group_pages">Страницы</string>
+    <string name="tool_group_convert">Конвертация и отправка</string>
+    <string name="tool_group_security">Безопасность</string>
+    <!-- The dock's round button: the tools the dock has no room for -->
+    <string name="common_tool_more">Ещё</string>
+    <!-- The dock's editor in Settings, and the tools it does not hold -->
+    <string name="settings_customize_dock">Настроить панель</string>
+    <string name="settings_off_the_dock">Не на панели</string>
+    <string name="toolbar_tool_off_dock">%1$s, не на панели</string>
 </resources>

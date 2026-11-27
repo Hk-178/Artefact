@@ -28,6 +28,7 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -368,6 +369,7 @@ fun ToolSubToolbar(vm: AppViewModel, doc: OpenDocument) {
     fun toggle(p: Picker) {
         ctl.picker = if (ctl.picker == p) Picker.None else p
     }
+    CompositionLocalProvider(LocalToolbarLabels provides vm.toolbarLabels) {
     when (ctl.tool) {
         ViewerTool.Markup -> SubToolbar {
             SubTool(LucideIcons.Highlighter, stringResource(R.string.common_tool_highlight), ctl.markup == TextMarkup.Highlight, { ctl.markup = TextMarkup.Highlight })
@@ -402,6 +404,7 @@ fun ToolSubToolbar(vm: AppViewModel, doc: OpenDocument) {
         ViewerTool.FillSign -> FillSignToolbar(vm, doc)
         ViewerTool.Edit -> EditToolbar(vm, doc)
         ViewerTool.None -> Unit
+    }
     }
 }
 

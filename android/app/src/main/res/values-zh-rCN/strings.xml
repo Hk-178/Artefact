@@ -41,7 +41,6 @@
     <string name="common_tool_crop">裁剪页面</string>
     <string name="common_tool_fill_sign">填写和签名</string>
     <string name="common_tool_scan">扫描</string>
-    <string name="common_tool_more_tools">更多工具</string>
     <string name="common_tool_recognize_text">识别文字</string>
     <string name="common_tool_comment">批注</string>
     <string name="common_tool_highlight">高亮</string>
@@ -466,6 +465,9 @@
     <string name="settings_language_system">跟随系统（%1$s）</string>
     <string name="settings_open_in_night_mode">文档默认用夜间模式</string>
     <string name="settings_open_in_night_mode_body">每次打开 PDF 或其他文档时，自动开启夜间模式。</string>
+    <!-- bars: a name under each tool's glyph -->
+    <string name="settings_toolbar_labels">工具栏文字</string>
+    <string name="settings_toolbar_labels_body">在各栏图标下方显示工具名称。</string>
     <string name="viewer_night_mode_on">已切换到夜间模式</string>
     <string name="viewer_night_mode_off">已退出夜间模式</string>
     <!-- Translator note: opens the choice of the language the voice reads in. -->
@@ -499,7 +501,6 @@
 
     <!-- Pages: the grid of pages and organizing -->
     <string name="pages_title">页面</string>
-    <string name="pages_select">选择页面</string>
     <!-- Translator note: the title while organizing; %1$d is how many pages are ticked. -->
     <plurals name="pages_selected_count">
         <item quantity="one">已选 %1$d 页</item>
@@ -513,6 +514,8 @@
     <string name="pages_rotate_left">左转</string>
     <!-- Translator note: rotate the selected pages a quarter turn to the right. Keep it short. -->
     <string name="pages_rotate_right">右转</string>
+    <!-- Translator note: Edit PDF, as the pages bar names it. Keep it short. -->
+    <string name="pages_edit">编辑</string>
 
     <!-- Pages: Insert sheet (where the new pages go, and what they are) -->
     <string name="pages_insert">插入</string>
@@ -672,6 +675,10 @@
     <string name="sheet_reading_mode">阅读模式</string>
     <string name="sheet_night_mode">夜间模式</string>
 
+    <!-- More menu: the small headings that group its rows -->
+    <string name="menu_section_page">页面</string>
+    <string name="menu_section_file">文件</string>
+
     <!-- Viewer sheets: Bookmarks & Table of Contents -->
     <!-- Translator note: the tab with the document's table of contents -->
     <string name="sheet_tab_contents">目录</string>
@@ -691,7 +698,6 @@
     <string name="sheet_page">第 %1$d 页</string>
 
     <!-- Viewer sheets: More tools -->
-    <string name="sheet_customize_toolbar">自定义工具栏</string>
 
     <!-- Viewer sheets: file sizes -->
     <plurals name="sheet_size_bytes">
@@ -798,19 +804,17 @@
     <string name="toolbar_tool_text">文本</string>
 
     <!-- Customize toolbar: moving tools between the bottom toolbar and More tools -->
-    <string name="toolbar_customize">自定义工具栏</string>
     <string name="toolbar_save">保存工具栏</string>
     <!-- Note: %1$d is how many tools fit on the toolbar (6 to 8) -->
     <plurals name="toolbar_customize_hint">
-        <item quantity="one">拖动工具，可移入工具栏或放回“更多工具”。工具栏最多放 %1$d 个。</item>
-        <item quantity="other">拖动工具，可移入工具栏或放回“更多工具”。工具栏最多放 %1$d 个。</item>
+        <item quantity="one">拖动以重新排序。程序坞可容纳 %1$d 个。</item>
+        <item quantity="other">拖动以重新排序。程序坞可容纳 %1$d 个。</item>
     </plurals>
     <!-- Note: heading over the tools that are on the bottom toolbar -->
     <string name="toolbar_section_toolbar">工具栏</string>
     <!-- Note: spoken for a tool tile; %1$s is the tool's name -->
     <string name="toolbar_tool_on_bar">%1$s，在工具栏中</string>
     <!-- Note: spoken for a tool tile; %1$s is the tool's name -->
-    <string name="toolbar_tool_in_more_tools">%1$s，在“更多工具”中</string>
 
     <!-- Highlight tool: marking text -->
     <string name="toolbar_strikethrough">删除线</string>
@@ -1681,4 +1685,15 @@
     <string name="thoughts_audios">音频</string>
     <string name="settings_reduce_transparency">降低透明度</string>
     <string name="settings_reduce_transparency_detail">玻璃与浮动栏变为不透明，不透出任何内容</string>
+    <!-- The fixed sections of a PDF's More list -->
+    <string name="tool_group_edit">编辑与标记</string>
+    <string name="tool_group_pages">页面</string>
+    <string name="tool_group_convert">转换与分享</string>
+    <string name="tool_group_security">安全</string>
+    <!-- The dock's round button: the tools the dock has no room for -->
+    <string name="common_tool_more">更多</string>
+    <!-- The dock's editor in Settings, and the tools it does not hold -->
+    <string name="settings_customize_dock">自定义程序坞</string>
+    <string name="settings_off_the_dock">不在程序坞中</string>
+    <string name="toolbar_tool_off_dock">%1$s，不在程序坞中</string>
 </resources>

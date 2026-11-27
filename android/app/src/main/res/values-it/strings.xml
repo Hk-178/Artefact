@@ -14,6 +14,9 @@
     <string name="settings_language_system">Lingua di sistema (%1$s)</string>
     <string name="settings_open_in_night_mode">Apri sempre PDF e documenti in modalità notturna</string>
     <string name="settings_open_in_night_mode_body">Apri ogni PDF e documento con la modalità notturna attiva.</string>
+    <!-- bars: a name under each tool's glyph -->
+    <string name="settings_toolbar_labels">Etichette della barra</string>
+    <string name="settings_toolbar_labels_body">Mostra il nome di ogni strumento sotto la sua icona.</string>
     <string name="open_with">Apri in Artefact</string>
 
     <!-- ================================================================ -->
@@ -58,7 +61,6 @@
     <string name="common_tool_crop">Ritaglia pagine</string>
     <string name="common_tool_fill_sign">Compila e firma</string>
     <string name="common_tool_scan">Scansiona</string>
-    <string name="common_tool_more_tools">Altri strumenti</string>
     <string name="common_tool_recognize_text">Riconosci testo</string>
     <string name="common_tool_comment">Commenta</string>
     <string name="common_tool_highlight">Evidenzia</string>
@@ -472,7 +474,6 @@
     <!-- ================================================================ -->
 
     <string name="pages_title">Pagine</string>
-    <string name="pages_select">Seleziona pagine</string>
     <plurals name="pages_selected_count">
         <item quantity="one">%1$d pagina selezionata</item>
         <item quantity="other">%1$d pagine selezionate</item>
@@ -482,6 +483,8 @@
     <string name="pages_extract">Estrai</string>
     <string name="pages_rotate_left">Sinistra</string>
     <string name="pages_rotate_right">Destra</string>
+    <!-- Translator note: Edit PDF, as the pages bar names it. Keep it short. -->
+    <string name="pages_edit">Modifica</string>
 
     <!-- Inserimento di pagine -->
 
@@ -624,6 +627,10 @@
     <string name="sheet_reading_mode">Modalità lettura</string>
     <string name="sheet_night_mode">Modalità notturna</string>
 
+    <!-- More menu: the small headings that group its rows -->
+    <string name="menu_section_page">Pagina</string>
+    <string name="menu_section_file">File</string>
+
     <!-- Segnalibri e indice -->
 
     <string name="sheet_tab_contents">Indice</string>
@@ -640,7 +647,6 @@
 
     <!-- Altri strumenti -->
 
-    <string name="sheet_customize_toolbar">Personalizza barra degli strumenti</string>
 
     <!-- Dimensioni dei file -->
 
@@ -735,15 +741,13 @@
 
     <!-- Personalizzazione della barra degli strumenti -->
 
-    <string name="toolbar_customize">Personalizza barra degli strumenti</string>
     <string name="toolbar_save">Salva barra degli strumenti</string>
     <plurals name="toolbar_customize_hint">
-        <item quantity="one">Trascina gli strumenti tra la barra e Altri strumenti. La barra può contenerne %1$d.</item>
-        <item quantity="other">Trascina gli strumenti tra la barra e Altri strumenti. La barra può contenerne %1$d.</item>
+        <item quantity="one">Trascina per riordinare. Il dock ne contiene %1$d.</item>
+        <item quantity="other">Trascina per riordinare. Il dock ne contiene %1$d.</item>
     </plurals>
     <string name="toolbar_section_toolbar">Barra degli strumenti</string>
     <string name="toolbar_tool_on_bar">%1$s, nella barra degli strumenti</string>
-    <string name="toolbar_tool_in_more_tools">%1$s, in Altri strumenti</string>
 
     <!-- Evidenziazione e marcatura del testo -->
 
@@ -1630,4 +1634,15 @@
     <string name="settings_reduce_transparency_detail">Vetro e barre mobili diventano opachi, non traspare nulla</string>
     <string name="qr_scanner">Scanner QR</string>
     <string name="qr_scan_prompt">Inquadra un codice QR</string>
+    <!-- The fixed sections of a PDF's More list -->
+    <string name="tool_group_edit">Modifica e annota</string>
+    <string name="tool_group_pages">Pagine</string>
+    <string name="tool_group_convert">Converti e condividi</string>
+    <string name="tool_group_security">Sicurezza</string>
+    <!-- The dock's round button: the tools the dock has no room for -->
+    <string name="common_tool_more">Altro</string>
+    <!-- The dock's editor in Settings, and the tools it does not hold -->
+    <string name="settings_customize_dock">Personalizza dock</string>
+    <string name="settings_off_the_dock">Fuori dal dock</string>
+    <string name="toolbar_tool_off_dock">%1$s, fuori dal dock</string>
 </resources>

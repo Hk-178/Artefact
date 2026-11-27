@@ -5,6 +5,9 @@
     <string name="settings_language_system">Idioma do sistema (%1$s)</string>
     <string name="settings_open_in_night_mode">Abrir sempre PDFs e documentos no modo noturno</string>
     <string name="settings_open_in_night_mode_body">Abrir cada PDF e documento com o modo noturno ativado.</string>
+    <!-- bars: a name under each tool's glyph -->
+    <string name="settings_toolbar_labels">Rótulos da barra</string>
+    <string name="settings_toolbar_labels_body">Mostrar o nome de cada ferramenta sob o seu ícone.</string>
     <string name="open_with">Abrir no Artefact</string>
     <string name="common_ok">OK</string>
     <string name="common_cancel">Cancelar</string>
@@ -41,7 +44,6 @@
     <string name="common_tool_crop">Recortar páginas</string>
     <string name="common_tool_fill_sign">Preencher e assinar</string>
     <string name="common_tool_scan">Digitalizar</string>
-    <string name="common_tool_more_tools">Mais ferramentas</string>
     <string name="common_tool_recognize_text">Reconhecer texto</string>
     <string name="common_tool_comment">Comentar</string>
     <string name="common_tool_highlight">Realçar</string>
@@ -297,7 +299,6 @@
     <string name="voice_open_settings">Abrir definições</string>
     <string name="voice_not_now">Agora não</string>
     <string name="pages_title">Páginas</string>
-    <string name="pages_select">Selecionar páginas</string>
     <plurals name="pages_selected_count">
         <item quantity="one">%1$d selecionada</item>
         <item quantity="other">%1$d selecionadas</item>
@@ -307,6 +308,8 @@
     <string name="pages_extract">Extrair</string>
     <string name="pages_rotate_left">Esquerda</string>
     <string name="pages_rotate_right">Direita</string>
+    <!-- Translator note: Edit PDF, as the pages bar names it. Keep it short. -->
+    <string name="pages_edit">Editar</string>
     <string name="pages_insert">Inserir</string>
     <string name="pages_at_start">No início</string>
     <string name="pages_at_end">No fim</string>
@@ -408,6 +411,10 @@
     <string name="sheet_single_page">Página única</string>
     <string name="sheet_reading_mode">Modo de leitura</string>
     <string name="sheet_night_mode">Modo noturno</string>
+
+    <!-- More menu: the small headings that group its rows -->
+    <string name="menu_section_page">Página</string>
+    <string name="menu_section_file">Ficheiro</string>
     <string name="sheet_tab_contents">Índice</string>
     <string name="sheet_tab_bookmarks">Marcadores</string>
     <string name="sheet_no_contents">Este documento não tem índice.</string>
@@ -419,7 +426,6 @@
     <string name="sheet_bookmark_removed">Marcador %1$s removido</string>
     <string name="sheet_delete_all">Eliminar tudo</string>
     <string name="sheet_page">Página %1$d</string>
-    <string name="sheet_customize_toolbar">Personalizar barra de ferramentas</string>
     <plurals name="sheet_size_bytes">
         <item quantity="one">%1$d byte</item>
         <item quantity="other">%1$d bytes</item>
@@ -482,15 +488,13 @@
     <string name="toolbar_label_recognize">Reconhecer</string>
     <string name="toolbar_label_add_text">Adicionar texto</string>
     <string name="toolbar_tool_text">Texto</string>
-    <string name="toolbar_customize">Personalizar barra de ferramentas</string>
     <string name="toolbar_save">Guardar barra de ferramentas</string>
     <plurals name="toolbar_customize_hint">
-        <item quantity="one">Arraste ferramentas entre a barra e Mais ferramentas. A barra leva %1$d.</item>
-        <item quantity="other">Arraste ferramentas entre a barra e Mais ferramentas. A barra leva %1$d.</item>
+        <item quantity="one">Arrasta para reordenar. O dock tem %1$d.</item>
+        <item quantity="other">Arrasta para reordenar. O dock tem %1$d.</item>
     </plurals>
     <string name="toolbar_section_toolbar">Barra de ferramentas</string>
     <string name="toolbar_tool_on_bar">%1$s, na barra de ferramentas</string>
-    <string name="toolbar_tool_in_more_tools">%1$s, em Mais ferramentas</string>
     <string name="toolbar_strikethrough">Rasurado</string>
     <string name="toolbar_no_text_to_mark">Esta página não tem texto para marcar. Reconheça primeiro o texto (Mais ferramentas ▸ Reconhecer texto).</string>
     <string name="toolbar_draw_freeform">Desenhar à mão livre</string>
@@ -1225,4 +1229,15 @@
     <string name="settings_reduce_transparency_detail">O vidro e as barras flutuantes ficam opacos, nada transparece</string>
     <string name="qr_scanner">Leitor de QR</string>
     <string name="qr_scan_prompt">Aponte a câmara para um código QR</string>
+    <!-- The fixed sections of a PDF's More list -->
+    <string name="tool_group_edit">Editar e anotar</string>
+    <string name="tool_group_pages">Páginas</string>
+    <string name="tool_group_convert">Converter e partilhar</string>
+    <string name="tool_group_security">Segurança</string>
+    <!-- The dock's round button: the tools the dock has no room for -->
+    <string name="common_tool_more">Mais</string>
+    <!-- The dock's editor in Settings, and the tools it does not hold -->
+    <string name="settings_customize_dock">Personalizar dock</string>
+    <string name="settings_off_the_dock">Fora do dock</string>
+    <string name="toolbar_tool_off_dock">%1$s, fora do dock</string>
 </resources>

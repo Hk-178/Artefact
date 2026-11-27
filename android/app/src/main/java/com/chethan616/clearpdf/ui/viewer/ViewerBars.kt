@@ -70,6 +70,7 @@ import com.chethan616.clearpdf.ui.glass.BarGlyphButton
 import com.chethan616.clearpdf.ui.glass.GlassIcon
 import com.chethan616.clearpdf.ui.glass.GlassMenu
 import com.chethan616.clearpdf.ui.glass.GlassMenuItem
+import com.chethan616.clearpdf.ui.glass.MenuTrail
 import com.chethan616.clearpdf.ui.glass.GlassMotion
 import com.chethan616.clearpdf.ui.glass.GlassPill
 import com.chethan616.clearpdf.ui.glass.MinTouch
@@ -353,23 +354,25 @@ internal fun dockSlots(widthDp: Int): Int = when {
 /**
  * The floating dock, in the manner of the tools' own bars (Edit, Comment, Fill & Sign): the tools
  * the reader keeps there as glyphs on one glass capsule, the one just tapped on a blue disc for a
- * moment, and More tools as a blue glass circle beside it (where those bars keep Done). One capsule
+ * moment, and More as a blue glass circle beside it (where those bars keep Done). One capsule
  * is one piece of glass to draw, where a row of glass circles was one each.
  */
 @Composable
 fun QuickToolbar(
     tools: List<QuickTool>,
     onTool: (QuickTool) -> Unit,
-    moreTools: List<QuickTool> = emptyList(),
-    onCustomize: ((Rect) -> Unit)? = null,
+    /** Name each tool under its glyph (Settings ▸ Toolbar labels). */
+    labels: Boolean = true,
+    /** Everything the dock has no room for, in the fixed order its groups go in. */
+    more: List<QuickTool> = emptyList(),
 ) {
     val width = LocalConfiguration.current.screenWidthDp
-    // Leave room for a readable label and keep the remaining actions in More tools.
-    val slots = if (clear.clean) ((width - 24) / 76 - 1).coerceIn(1, 8) else dockSlots(width)
+    // Leave room for a readable label and keep the remaining actions in More.
+    val slots = toolbarSlots(width, clear.clean)
     val shown = tools.take(slots)
-    // The four-dot control is an anchored action menu, not another bottom sheet.  Keep the
-    // clipped-off toolbar actions in the same menu so every action remains reachable on phones.
-    val overflow = remember(tools, moreTools, slots) { (tools.drop(slots) + moreTools).distinct() }
+    // The four-dot control is an anchored action menu, not another bottom sheet. It holds what
+    // the dock has no room for, already worked out by the one layout both menus share.
+    val overflow = remember(more) { more.distinct() }
     var menuAt by remember { mutableStateOf<Rect?>(null) }
     var moreRect by remember { mutableStateOf(Rect.Zero) }
     val turn by androidx.compose.animation.core.animateFloatAsState(if (menuAt != null) 45f else 0f, GlassMotion.morph(), label = "more")
@@ -388,15 +391,15 @@ fun QuickToolbar(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             for (tool in shown) {
-                LabeledDockItem(tool.icon, stringResource(tool.label), Modifier.weight(1f), lit == tool) {
+                LabeledDockItem(tool.icon, stringResource(tool.label), Modifier.weight(1f), lit == tool, labels) {
                     lit = tool
                     onTool(tool)
                 }
             }
-            if (overflow.isNotEmpty() || onCustomize != null) {
+            if (overflow.isNotEmpty()) {
                 LabeledDockItem(
-                    LucideIcons.LayoutGrid, stringResource(R.string.common_tool_more_tools),
-                    Modifier.weight(1f).onGloballyPositioned { moreRect = it.boundsInWindow() }, menuAt != null,
+                    LucideIcons.LayoutGrid, stringResource(R.string.common_tool_more),
+                    Modifier.weight(1f).onGloballyPositioned { moreRect = it.boundsInWindow() }, menuAt != null, labels,
                 ) { menuAt = moreRect }
             }
         }
@@ -412,7 +415,7 @@ fun QuickToolbar(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             CompositionLocalProvider(LocalGlassInk provides ink.color) {
-                for (t in shown) DockItem(t.icon, stringResource(t.label), lit == t) {
+                for (t in shown) DockItem(t.icon, stringResource(t.label), lit == t, labels) {
                     lit = t
                     onTool(t)
                 }
@@ -420,28 +423,33 @@ fun QuickToolbar(
         }
         // Office documents have their own concise toolbar. PDFs use the menu for the remaining
         // tools rather than opening the old grid sheet.
-        if (overflow.isNotEmpty() || onCustomize != null) GlassCircle(
+        if (overflow.isNotEmpty()) GlassCircle(
             onClick = { menuAt = moreRect },
             size = 48.dp,
             tint = Candy.Sky,
             // solid, not blended over the page: a washed-out blue lost its white glyph on white (#158)
             solid = true,
-            label = stringResource(R.string.common_tool_more_tools),
+            label = stringResource(R.string.common_tool_more),
             modifier = Modifier.onGloballyPositioned { moreRect = it.boundsInWindow() },
         ) {
             GlassIcon(LucideIcons.LayoutGrid, null, Modifier.size(22.dp).androidxRotate(turn))
         }
     }
     menuAt?.let { anchor ->
-        GlassMenu(anchor, { menuAt = null }, buildList {
-            overflow.forEach { tool -> add(GlassMenuItem(stringResource(tool.title), tool.icon) { onTool(tool) }) }
-            if (onCustomize != null) add(GlassMenuItem(stringResource(R.string.toolbar_customize), LucideIcons.SlidersHorizontal) { onCustomize(anchor) })
+        // the fixed group order, then the order the tools were declared in; never the user's own
+        val rows = overflow.sortedWith(compareBy<QuickTool>({ it.group?.ordinal ?: Int.MAX_VALUE }, { it.ordinal }))
+        GlassMenu(anchor, { menuAt = null }, rows.map { tool ->
+            GlassMenuItem(
+                stringResource(tool.title), tool.icon,
+                section = tool.group?.let { stringResource(it.label) },
+                trail = if (tool.subTools) MenuTrail.Chevron else MenuTrail.None,
+            ) { onTool(tool) }
         })
     }
 }
 
 @Composable
-private fun LabeledDockItem(icon: ImageVector, label: String, modifier: Modifier, lit: Boolean, onClick: () -> Unit) {
+private fun LabeledDockItem(icon: ImageVector, label: String, modifier: Modifier, lit: Boolean, showLabel: Boolean, onClick: () -> Unit) {
     val c = clear
     Column(
         modifier.fillMaxHeight().clip(RoundedRectangle(12.dp))
@@ -450,9 +458,11 @@ private fun LabeledDockItem(icon: ImageVector, label: String, modifier: Modifier
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-        Icon(icon, null, Modifier.size(20.dp), tint = c.ink)
-        Text(label, style = ClearType.Caption, color = c.ink, maxLines = 2, overflow = TextOverflow.Ellipsis,
-            textAlign = androidx.compose.ui.text.style.TextAlign.Center)
+        Icon(icon, null, Modifier.size(if (showLabel) 20.dp else 24.dp), tint = c.ink)
+        if (showLabel) Text(
+            label, style = ClearType.Caption, color = c.ink, maxLines = 2, overflow = TextOverflow.Ellipsis,
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+        )
     }
 }
 
@@ -463,7 +473,7 @@ private fun Modifier.androidxRotate(degrees: Float) = this.graphicsLayer { rotat
  * eraser, highlighter, scribble) are told apart without trying each (#158); [lit], white on a blue pill.
  */
 @Composable
-private fun DockItem(icon: ImageVector, label: String, lit: Boolean, onClick: () -> Unit) {
+private fun DockItem(icon: ImageVector, label: String, lit: Boolean, showLabel: Boolean, onClick: () -> Unit) {
     val disc by animateColorAsState(if (lit) Candy.Sky else Color.Transparent, GlassMotion.settle(), label = "dock")
     val ink = com.chethan616.clearpdf.ui.glass.LocalGlassInk.current.takeIf { it != Color.Unspecified } ?: clear.ink
     val glyph by animateColorAsState(if (lit) Color.White else ink, GlassMotion.settle(), label = "dockInk")
@@ -475,13 +485,18 @@ private fun DockItem(icon: ImageVector, label: String, lit: Boolean, onClick: ()
         Box(Modifier.size(width = 44.dp, height = 28.dp).clip(Capsule).background(disc), contentAlignment = Alignment.Center) {
             Icon(icon, null, tint = glyph, modifier = Modifier.size(21.dp))
         }
-        Spacer(Modifier.height(2.dp))
-        Text(
-            label, style = ClearType.Caption.copy(fontSize = 11.sp, lineHeight = 13.sp, fontWeight = androidx.compose.ui.text.font.FontWeight.Medium),
-            color = ink, maxLines = 1, softWrap = false, overflow = TextOverflow.Ellipsis,
-        )
+        if (showLabel) {
+            Spacer(Modifier.height(2.dp))
+            Text(
+                label, style = ClearType.Caption.copy(fontSize = 11.sp, lineHeight = 13.sp, fontWeight = androidx.compose.ui.text.font.FontWeight.Medium),
+                color = ink, maxLines = 1, softWrap = false, overflow = TextOverflow.Ellipsis,
+            )
+        }
     }
 }
+
+/** Whether the bars name each tool under its glyph (Settings ▸ Toolbar labels). */
+val LocalToolbarLabels = androidx.compose.runtime.compositionLocalOf { true }
 
 /** No line along bars any more: glass floats. Kept so the tools' own bars can call it. */
 fun Modifier.barTopLine(): Modifier = this
@@ -563,6 +578,7 @@ private fun SubButton(icon: ImageVector, description: String, selected: Boolean,
 @Composable
 private fun SubFace(description: String, selected: Boolean, onClick: () -> Unit, width: Dp, enabled: Boolean = true, shaded: Boolean = false, glyph: @Composable (Color) -> Unit) {
     val c = clear
+    val ink = com.chethan616.clearpdf.ui.glass.LocalGlassInk.current.takeIf { it != Color.Unspecified } ?: c.ink
     val vivid = selected && !shaded
     val disc by animateColorAsState(
         when {
@@ -572,13 +588,23 @@ private fun SubFace(description: String, selected: Boolean, onClick: () -> Unit,
         },
         GlassMotion.settle(), label = "sub",
     )
-    Box(
+    val named = LocalToolbarLabels.current
+    Column(
         Modifier.width(width).fillMaxHeight().slideToWhenChosen(vivid).pressable(onClick, enabled = enabled, pressedScale = 0.86f).semantics { contentDescription = description },
-        contentAlignment = Alignment.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
     ) {
-        Box(Modifier.size(42.dp).clip(CircleShape).background(disc))
-        val ink = com.chethan616.clearpdf.ui.glass.LocalGlassInk.current.takeIf { it != Color.Unspecified } ?: c.ink
-        glyph(if (!enabled) ink.copy(alpha = 0.38f) else if (vivid) Color.White else ink)
+        Box(contentAlignment = Alignment.Center) {
+            Box(Modifier.size(42.dp).clip(CircleShape).background(disc))
+            glyph(if (!enabled) ink.copy(alpha = 0.38f) else if (vivid) Color.White else ink)
+        }
+        // the tool's name under its glyph: five look-alike glyphs are told apart without trying each
+        if (named) Text(
+            description,
+            style = ClearType.Caption.copy(fontSize = 10.sp, lineHeight = 12.sp),
+            color = if (!enabled) ink.copy(alpha = 0.38f) else ink,
+            maxLines = 1, softWrap = false, overflow = TextOverflow.Ellipsis,
+        )
     }
 }
 

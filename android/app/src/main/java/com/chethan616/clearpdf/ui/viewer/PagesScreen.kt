@@ -61,6 +61,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.chethan616.clearpdf.R
@@ -134,7 +135,7 @@ fun PagesScreen(vm: AppViewModel, doc: OpenDocument, onClose: () -> Unit) {
             }
             Spacer(Modifier.width(14.dp))
             Text(
-                if (organizing && picked.isNotEmpty()) pluralStringResource(R.plurals.pages_selected_count, picked.size, picked.size) else if (organizing) stringResource(R.string.pages_select) else stringResource(R.string.pages_title),
+                if (organizing && picked.isNotEmpty()) pluralStringResource(R.plurals.pages_selected_count, picked.size, picked.size) else if (organizing) stringResource(R.string.toolbar_label_organize) else stringResource(R.string.pages_title),
                 style = com.chethan616.clearpdf.ui.theme.ClearType.Title, color = com.chethan616.clearpdf.ui.theme.clear.ink, maxLines = 1, modifier = Modifier.weight(1f),
             )
             if (organizing && exporting == null) {
@@ -254,7 +255,7 @@ fun PagesScreen(vm: AppViewModel, doc: OpenDocument, onClose: () -> Unit) {
                 OrganizeItem(LucideIcons.Save, stringResource(R.string.common_save), enabled) { vm.writeImages(doc, exporting, picked, share = false) }
                 OrganizeItem(LucideIcons.Share2, stringResource(R.string.common_share), enabled) { vm.writeImages(doc, exporting, picked, share = true) }
             } else if (organizing) {
-                OrganizeItem(LucideIcons.FilePlus, stringResource(R.string.pages_insert_page), true) { insertMenu = true }
+                OrganizeItem(LucideIcons.FilePlus, stringResource(R.string.pages_insert_page), true, stringResource(R.string.pages_insert)) { insertMenu = true }
                 OrganizeItem(LucideIcons.FileOutput, stringResource(R.string.pages_extract), enabled) { vm.extractPages(doc, picked) }
                 OrganizeItem(LucideIcons.Trash2, stringResource(R.string.common_delete), enabled && picked.size < doc.pageCount) {
                     vm.runTool(doc, "page_delete", mapOf("pages" to picked.map { it + 1 }))
@@ -263,11 +264,11 @@ fun PagesScreen(vm: AppViewModel, doc: OpenDocument, onClose: () -> Unit) {
                 OrganizeItem(LucideIcons.RotateCcw, stringResource(R.string.pages_rotate_left), enabled) { vm.runTool(doc, "page_rotate", mapOf("pages" to picked.map { it + 1 }, "degrees" to -90)) }
                 OrganizeItem(LucideIcons.RotateCw, stringResource(R.string.pages_rotate_right), enabled) { vm.runTool(doc, "page_rotate", mapOf("pages" to picked.map { it + 1 }, "degrees" to 90)) }
             } else {
-                OrganizeItem(LucideIcons.FilePenLine, stringResource(R.string.common_tool_edit_pdf), true) {
+                OrganizeItem(LucideIcons.FilePenLine, stringResource(R.string.common_tool_edit_pdf), true, stringResource(R.string.pages_edit)) {
                     close()
                     vm.enterTool(doc, ViewerTool.Edit)
                 }
-                OrganizeItem(LucideIcons.Crop, stringResource(R.string.common_tool_crop), true) {
+                OrganizeItem(LucideIcons.Crop, stringResource(R.string.common_tool_crop), true, stringResource(R.string.toolbar_label_crop)) {
                     close()
                     vm.runQuickTool(doc, QuickTool.Crop)
                 }
@@ -312,14 +313,28 @@ fun PagesScreen(vm: AppViewModel, doc: OpenDocument, onClose: () -> Unit) {
     }
 }
 
-/** An action of the pages' glass bar: its glyph in the glass's ink (it names itself to TalkBack), faint while it can't be used. */
+/**
+ * An action of the pages' glass bar: its glyph in the glass's ink, over its one-word name while the
+ * bars are labelled (Settings ▸ Toolbar labels), faint while it can't be used. It always names
+ * itself to TalkBack in full ([label]); [short] is only what fits under the glyph.
+ */
 @Composable
-private fun androidx.compose.foundation.layout.RowScope.OrganizeItem(icon: ImageVector, label: String, enabled: Boolean, onClick: () -> Unit) {
-    Box(
+private fun androidx.compose.foundation.layout.RowScope.OrganizeItem(icon: ImageVector, label: String, enabled: Boolean, short: String = label, onClick: () -> Unit) {
+    val named = LocalToolbarLabels.current
+    val ink = com.chethan616.clearpdf.ui.theme.clear.ink
+    Column(
         Modifier.weight(1f).fillMaxHeight().pressable(onClick, enabled = enabled, pressedScale = 0.86f).semantics { contentDescription = label },
-        contentAlignment = Alignment.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
     ) {
-        com.chethan616.clearpdf.ui.glass.GlassIcon(icon, null, Modifier.size(24.dp).graphicsLayer { alpha = if (enabled) 1f else 0.35f })
+        com.chethan616.clearpdf.ui.glass.GlassIcon(icon, null, Modifier.size(if (named) 22.dp else 24.dp).graphicsLayer { alpha = if (enabled) 1f else 0.35f })
+        // the action's name under its glyph: five glyphs are told apart without trying each
+        if (named) Text(
+            short,
+            style = com.chethan616.clearpdf.ui.theme.ClearType.Caption.copy(fontSize = 10.sp, lineHeight = 12.sp),
+            color = if (enabled) ink else ink.copy(alpha = 0.38f),
+            maxLines = 1, softWrap = false, overflow = TextOverflow.Ellipsis,
+        )
     }
 }
 

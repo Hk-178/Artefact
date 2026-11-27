@@ -183,7 +183,8 @@ private fun EditToolsBar(vm: AppViewModel, doc: OpenDocument) {
     SubToolbar {
         val textHint = stringResource(R.string.edit_tap_for_text)
         val imageHint = stringResource(R.string.edit_tap_for_image)
-        SubTool(LucideIcons.LayoutGrid, stringResource(R.string.common_tool_organize), vm.organizing, {
+        // the bar names tools in a word: "Organize", not the sheet's "Organize pages"
+        SubTool(LucideIcons.LayoutGrid, stringResource(R.string.toolbar_label_organize), vm.organizing, {
             vm.organizing = true
             doc.controller.pagesOpen = true
         })

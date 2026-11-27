@@ -940,6 +940,15 @@ class AppViewModel(app: Application, private val saved: SavedStateHandle) : Andr
         appPrefs.edit().putString("pageMode", if (mode == com.chethan616.clearpdf.ui.viewer.PageMode.SinglePage) "single" else "continuous").apply()
     }
 
+    /** Whether the bars name each tool under its glyph (Preferences; on as it comes). */
+    var toolbarLabels by mutableStateOf(appPrefs.getBoolean("toolbarLabels", true))
+        private set
+
+    fun updateToolbarLabels(on: Boolean) {
+        toolbarLabels = on
+        appPrefs.edit().putBoolean("toolbarLabels", on).apply()
+    }
+
     fun setNightMode(doc: OpenDocument, on: Boolean) {
         doc.controller.nightMode = on
         setNightModeDefault(on)

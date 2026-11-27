@@ -131,7 +131,7 @@ private fun ColumnScope.FileMenuBody(vm: AppViewModel, r: FileRow, recent: Boole
     Spacer(Modifier.height(4.dp))
     @Composable
     fun row(label: String, icon: ImageVector, destructive: Boolean = false, action: () -> Unit) {
-        MorphMenuRow(GlassMenuItem(label, icon, destructive, action), shut) { choose(action) }
+        MorphMenuRow(GlassMenuItem(label, icon, destructive = destructive, onClick = action), shut) { choose(action) }
     }
     row(stringResource(R.string.common_tool_edit_pdf), LucideIcons.FilePenLine) { vm.openFor(r, FileTool.Edit) }
     row(stringResource(R.string.common_tool_read_aloud), LucideIcons.Volume2) { vm.openFor(r, FileTool.ReadAloud) }

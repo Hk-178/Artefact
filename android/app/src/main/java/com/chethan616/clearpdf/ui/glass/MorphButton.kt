@@ -25,8 +25,6 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -50,14 +48,11 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
-import com.chethan616.clearpdf.ui.theme.Candy
-import com.chethan616.clearpdf.ui.theme.ClearType
 import com.chethan616.clearpdf.ui.theme.clear
 import kotlin.math.max
 import kotlin.math.min
@@ -120,7 +115,9 @@ fun MorphButtonSurface(
     maxHeight: Dp = 480.dp,
     icon: (@Composable () -> Unit)? = null,
 ) = MorphButtonSurface(anchor, open, onDismiss, onGone, menuWidth, maxHeight, icon) { shut, choose ->
-    items.forEach { item -> MorphMenuRow(item, shut) { choose(item.onClick) } }
+    // the surface runs the row's action once its glass has folded back into the button, and only once
+    var picked by remember { mutableStateOf(false) }
+    MenuRows(items) { item -> if (!picked && !shut) { picked = true; choose(item.onClick) } }
 }
 
 /**
@@ -398,23 +395,27 @@ private fun RectMorphSurface(
     }
 }
 
-/** One of the menu's rows, as [GlassMenu]'s: the label, its glyph at the end; it runs once the glass has folded. */
+/**
+ * One of a menu's rows, for a menu that lays out its own rows (a [MorphButtonSurface]'s `body`): the
+ * shared face, at the same height as every other menu's rows. Its action runs once the glass has
+ * folded back into the button.
+ */
 @Composable
 internal fun MorphMenuRow(item: GlassMenuItem, shut: Boolean, close: () -> Unit) {
     var chosen by remember { mutableStateOf(false) }
-    val ink = LocalGlassInk.current
     Row(
-        Modifier.fillMaxWidth().pressable({
-            if (!chosen && !shut) {
-                chosen = true
-                // the surface runs the row's action once its glass has folded back into the button
-                close()
-            }
-        }).padding(horizontal = 16.dp, vertical = 11.dp),
+        Modifier.fillMaxWidth()
+            .pressable({
+                if (!chosen && !shut) {
+                    chosen = true
+                    close()
+                }
+            })
+            .heightIn(min = 48.dp)
+            .padding(horizontal = 16.dp, vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(item.label, style = ClearType.BodyStrong, color = if (item.destructive) Candy.Tomato else ink, modifier = Modifier.weight(1f), maxLines = 1, overflow = TextOverflow.Ellipsis)
-        if (item.icon != null) Icon(item.icon, null, tint = if (item.destructive) Candy.Tomato else ink.copy(alpha = 0.65f), modifier = Modifier.size(19.dp))
+        MenuRowFace(item)
     }
 }
 

@@ -15,6 +15,9 @@
     <string name="settings_language_system">Idioma del sistema (%1$s)</string>
     <string name="settings_open_in_night_mode">Abrir siempre archivos PDF y documentos en modo nocturno</string>
     <string name="settings_open_in_night_mode_body">Abre cada PDF y documento con el modo nocturno activado.</string>
+    <!-- bars: a name under each tool's glyph -->
+    <string name="settings_toolbar_labels">Etiquetas de la barra</string>
+    <string name="settings_toolbar_labels_body">Poner el nombre de cada herramienta bajo su icono.</string>
     <string name="open_with">Abrir con Artefact</string>
 
     <!-- Shared: buttons and words used on many screens -->
@@ -55,7 +58,6 @@
     <string name="common_tool_crop">Recortar páginas</string>
     <string name="common_tool_fill_sign">Rellenar y firmar</string>
     <string name="common_tool_scan">Escanear</string>
-    <string name="common_tool_more_tools">Más herramientas</string>
     <string name="common_tool_recognize_text">Reconocer texto</string>
     <string name="common_tool_comment">Comentar</string>
     <string name="common_tool_highlight">Resaltar</string>
@@ -466,7 +468,6 @@
 
     <!-- Pages: the grid of pages and organizing -->
     <string name="pages_title">Páginas</string>
-    <string name="pages_select">Seleccionar páginas</string>
     <!-- Translator note: the title while organizing; %1$d is how many pages are ticked. -->
     <plurals name="pages_selected_count">
         <item quantity="one">%1$d seleccionadas</item>
@@ -480,6 +481,8 @@
     <string name="pages_rotate_left">Izquierda</string>
     <!-- Translator note: rotate the selected pages a quarter turn to the right. Keep it short. -->
     <string name="pages_rotate_right">Derecha</string>
+    <!-- Translator note: Edit PDF, as the pages bar names it. Keep it short. -->
+    <string name="pages_edit">Editar</string>
 
     <!-- Pages: Insert sheet (where the new pages go, and what they are) -->
     <string name="pages_insert">Insertar</string>
@@ -637,6 +640,10 @@
     <string name="sheet_reading_mode">Modo lectura</string>
     <string name="sheet_night_mode">Modo nocturno</string>
 
+    <!-- More menu: the small headings that group its rows -->
+    <string name="menu_section_page">Página</string>
+    <string name="menu_section_file">Archivo</string>
+
     <!-- Viewer sheets: Bookmarks & Table of Contents -->
     <!-- Translator note: the tab with the document's table of contents -->
     <string name="sheet_tab_contents">Índice</string>
@@ -656,7 +663,6 @@
     <string name="sheet_page">Página %1$d</string>
 
     <!-- Viewer sheets: More tools -->
-    <string name="sheet_customize_toolbar">Personalizar barra de herramientas</string>
 
     <!-- Viewer sheets: file sizes -->
     <plurals name="sheet_size_bytes">
@@ -755,19 +761,17 @@
     <string name="toolbar_tool_text">Texto</string>
 
     <!-- Customize toolbar: moving tools between the bottom toolbar and More tools -->
-    <string name="toolbar_customize">Personalizar barra de herramientas</string>
     <string name="toolbar_save">Guardar barra</string>
     <!-- Note: %1$d is how many tools fit on the toolbar (6 to 8) -->
     <plurals name="toolbar_customize_hint">
-        <item quantity="one">Arrastra herramientas entre la barra y Más herramientas. La barra admite %1$d.</item>
-        <item quantity="other">Arrastra herramientas entre la barra y Más herramientas. La barra admite %1$d.</item>
+        <item quantity="one">Arrastra para reordenar. El dock admite %1$d.</item>
+        <item quantity="other">Arrastra para reordenar. El dock admite %1$d.</item>
     </plurals>
     <!-- Note: heading over the tools that are on the bottom toolbar -->
     <string name="toolbar_section_toolbar">Barra de herramientas</string>
     <!-- Note: spoken for a tool tile; %1$s is the tool's name -->
     <string name="toolbar_tool_on_bar">%1$s, en la barra</string>
     <!-- Note: spoken for a tool tile; %1$s is the tool's name -->
-    <string name="toolbar_tool_in_more_tools">%1$s, en Más herramientas</string>
 
     <!-- Highlight tool: marking text -->
     <string name="toolbar_strikethrough">Tachar</string>
@@ -1648,4 +1652,15 @@
     <string name="settings_reduce_transparency_detail">El vidrio y las barras flotantes se vuelven opacos, no se ve nada detrás</string>
     <string name="qr_scanner">Escáner QR</string>
     <string name="qr_scan_prompt">Apunta la cámara a un código QR</string>
+    <!-- The fixed sections of a PDF's More list -->
+    <string name="tool_group_edit">Editar y marcar</string>
+    <string name="tool_group_pages">Páginas</string>
+    <string name="tool_group_convert">Convertir y compartir</string>
+    <string name="tool_group_security">Seguridad</string>
+    <!-- The dock's round button: the tools the dock has no room for -->
+    <string name="common_tool_more">Más</string>
+    <!-- The dock's editor in Settings, and the tools it does not hold -->
+    <string name="settings_customize_dock">Personalizar el dock</string>
+    <string name="settings_off_the_dock">Fuera del dock</string>
+    <string name="toolbar_tool_off_dock">%1$s, fuera del dock</string>
 </resources>

@@ -141,6 +141,7 @@ private fun SettingsRoot(vm: AppViewModel, openLicences: () -> Unit, openGlass: 
     var leaving by remember { mutableStateOf<String?>(null) }
     var naming by remember { mutableStateOf(false) }
     var authorDialog by remember { mutableStateOf(false) }
+    var customizingDock by remember { mutableStateOf(false) }
     LazyColumn(Modifier.fillMaxSize().screenColumn(), contentPadding = PaddingValues(bottom = 32.dp)) {
         item { Spacer(Modifier.windowInsetsTopHeight(WindowInsets.statusBars)) }
         item(key = "title") {
@@ -157,6 +158,14 @@ private fun SettingsRoot(vm: AppViewModel, openLicences: () -> Unit, openGlass: 
             Panel {
                 ThemePicker(vm.theme) { vm.setThemeChoice(it) }
                 AppearancePicker(vm.cleanAppearance, vm::updateCleanAppearance)
+                ToggleRow(
+                    LucideIcons.Type, Candy.Mint, stringResource(R.string.settings_toolbar_labels),
+                    stringResource(R.string.settings_toolbar_labels_body), vm.toolbarLabels,
+                ) { vm.updateToolbarLabels(it) }
+                SettingRow(
+                    LucideIcons.LayoutGrid, Candy.Sky, stringResource(R.string.settings_customize_dock),
+                    { customizingDock = true }, chevron = true,
+                )
                 // a Liquid Glass setting: Clean is solid surfaces already
                 if (!vm.cleanAppearance) ToggleRow(
                     LucideIcons.Contrast, Candy.Sky, stringResource(R.string.settings_reduce_transparency),
@@ -235,6 +244,12 @@ private fun SettingsRoot(vm: AppViewModel, openLicences: () -> Unit, openGlass: 
             confirm = stringResource(R.string.common_ok), onConfirm = { vm.toolPrefs.author = name.trim(); authorDialog = false; vm.prefsChanged++ },
             dismiss = stringResource(R.string.common_cancel),
         ) { GlassTextField(name, { name = it }, stringResource(R.string.common_your_name)) }
+    }
+    // the dock's editor: which tools it holds, and in what order (the More list is derived)
+    if (customizingDock) {
+        com.chethan616.clearpdf.ui.PdfSheet(onDismiss = { customizingDock = false }) {
+            com.chethan616.clearpdf.ui.viewer.CustomizeDock(vm) { customizingDock = false }
+        }
     }
 }
 

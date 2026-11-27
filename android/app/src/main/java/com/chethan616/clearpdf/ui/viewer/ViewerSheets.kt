@@ -68,6 +68,7 @@ import com.chethan616.clearpdf.ui.SheetTitle
 import com.chethan616.clearpdf.ui.pdfColors
 import com.chethan616.clearpdf.ui.SheetCircleButton
 import com.chethan616.clearpdf.ui.SheetSection
+import com.chethan616.clearpdf.ui.glass.MenuTrail
 import com.chethan616.clearpdf.ui.glass.pressable
 import com.chethan616.clearpdf.ui.theme.Candy
 import com.chethan616.clearpdf.ui.theme.ClearType
@@ -97,36 +98,42 @@ fun MoreSheet(
     val ctl = doc.controller
     val bookmarked = vm.bookmarks.isBookmarked(doc, doc.viewer.currentPage)
     val starred = vm.isStarred(doc)
+    // what the bottom bar already shows is not offered again here: one action, one place. The
+    // rows come from the same layout both menus are built from, so they cannot drift.
+    val layout = toolLayout(
+        docKind(doc), vm.quickToolbar.bar,
+        toolbarSlots(androidx.compose.ui.platform.LocalConfiguration.current.screenWidthDp, clear.clean),
+    )
+    val page = stringResource(R.string.menu_section_page)
+    val reading = stringResource(R.string.settings_reading)
+    val file = stringResource(R.string.menu_section_file)
     val items = buildList {
         add(com.chethan616.clearpdf.ui.glass.GlassMenuItem(stringResource(if (starred) R.string.sheet_remove_star else R.string.sheet_add_star), LucideIcons.Star) { vm.toggleStar(doc) })
         add(com.chethan616.clearpdf.ui.glass.GlassMenuItem(stringResource(if (bookmarked) R.string.sheet_remove_bookmark else R.string.sheet_add_bookmark), if (bookmarked) LucideIcons.BookmarkMinus else LucideIcons.BookmarkPlus) { vm.toggleBookmark(doc) })
-        add(com.chethan616.clearpdf.ui.glass.GlassMenuItem(stringResource(R.string.common_tool_read_aloud), LucideIcons.Volume2) { vm.startReadAloud(doc) })
-        if (doc.isSlides) add(com.chethan616.clearpdf.ui.glass.GlassMenuItem(stringResource(R.string.office_present), LucideIcons.Presentation) { vm.presenting = doc })
-        if (doc.isSlides) add(com.chethan616.clearpdf.ui.glass.GlassMenuItem(stringResource(R.string.office_slide_notes), LucideIcons.FileText) { ctl.sheet = ViewerSheet.SlideNotes })
-        else if (!doc.isOffice) add(com.chethan616.clearpdf.ui.glass.GlassMenuItem(stringResource(R.string.common_tool_edit_pdf), LucideIcons.FilePenLine) { vm.enterTool(doc, ViewerTool.Edit) })
-        add(com.chethan616.clearpdf.ui.glass.GlassMenuItem(stringResource(R.string.sheet_print), LucideIcons.Printer) { vm.print(doc) })
-        add(com.chethan616.clearpdf.ui.glass.GlassMenuItem(stringResource(R.string.sheet_view_settings), LucideIcons.Glasses) { ctl.sheet = ViewerSheet.ViewSettings })
-        add(com.chethan616.clearpdf.ui.glass.GlassMenuItem(
-            stringResource(if (ctl.nightMode) R.string.viewer_night_mode_on else R.string.viewer_night_mode_off),
-            if (ctl.nightMode) LucideIcons.Check else LucideIcons.Moon,
-        ) { vm.setNightMode(doc, !ctl.nightMode) })
-        add(com.chethan616.clearpdf.ui.glass.GlassMenuItem(stringResource(R.string.sheet_pages), LucideIcons.LayoutGrid) { ctl.pagesOpen = true })
-        add(com.chethan616.clearpdf.ui.glass.GlassMenuItem(stringResource(R.string.sheet_bookmarks_contents), LucideIcons.Bookmark) { ctl.sheet = ViewerSheet.Bookmarks })
-        if (doc.info.attachments > 0u) add(com.chethan616.clearpdf.ui.glass.GlassMenuItem(stringResource(R.string.sheet_attachments), LucideIcons.Paperclip) { ctl.sheet = ViewerSheet.Attachments })
+        if (QuickTool.ReadAloud in layout.header) add(com.chethan616.clearpdf.ui.glass.GlassMenuItem(stringResource(R.string.common_tool_read_aloud), LucideIcons.Volume2) { vm.startReadAloud(doc) })
+        if (QuickTool.Present in layout.header) add(com.chethan616.clearpdf.ui.glass.GlassMenuItem(stringResource(R.string.office_present), LucideIcons.Presentation) { vm.presenting = doc })
+        if (QuickTool.Edit in layout.header && !doc.isOffice) add(com.chethan616.clearpdf.ui.glass.GlassMenuItem(stringResource(R.string.common_tool_edit_pdf), LucideIcons.FilePenLine) { vm.enterTool(doc, ViewerTool.Edit) })
+        // the document itself: its pages, its contents and what is written on them
+        if (doc.isSlides) add(com.chethan616.clearpdf.ui.glass.GlassMenuItem(stringResource(R.string.office_slide_notes), LucideIcons.FileText, section = page, trail = MenuTrail.Chevron) { ctl.sheet = ViewerSheet.SlideNotes })
+        add(com.chethan616.clearpdf.ui.glass.GlassMenuItem(stringResource(R.string.sheet_pages), LucideIcons.LayoutGrid, section = page, trail = MenuTrail.Chevron) { ctl.pagesOpen = true })
+        add(com.chethan616.clearpdf.ui.glass.GlassMenuItem(stringResource(R.string.sheet_bookmarks_contents), LucideIcons.Bookmark, section = page, trail = MenuTrail.Chevron) { ctl.sheet = ViewerSheet.Bookmarks })
+        if (doc.info.attachments > 0u) add(com.chethan616.clearpdf.ui.glass.GlassMenuItem(stringResource(R.string.sheet_attachments), LucideIcons.Paperclip, section = page, trail = MenuTrail.Chevron) { ctl.sheet = ViewerSheet.Attachments })
         if (!doc.isOffice) {
-            add(com.chethan616.clearpdf.ui.glass.GlassMenuItem(stringResource(R.string.sheet_comment_list), LucideIcons.MessagesSquare) { ctl.sheet = ViewerSheet.Comments })
-            add(com.chethan616.clearpdf.ui.glass.GlassMenuItem(stringResource(R.string.sign_signatures), LucideIcons.ShieldCheck) { ctl.sheet = ViewerSheet.Signatures })
+            add(com.chethan616.clearpdf.ui.glass.GlassMenuItem(stringResource(R.string.sheet_comment_list), LucideIcons.MessagesSquare, section = page, trail = MenuTrail.Chevron) { ctl.sheet = ViewerSheet.Comments })
+            add(com.chethan616.clearpdf.ui.glass.GlassMenuItem(stringResource(R.string.sign_signatures), LucideIcons.ShieldCheck, section = page, trail = MenuTrail.Chevron) { ctl.sheet = ViewerSheet.Signatures })
         }
+        // how it reads
+        add(com.chethan616.clearpdf.ui.glass.GlassMenuItem(stringResource(R.string.sheet_night_mode), LucideIcons.Moon, section = reading, trail = MenuTrail.Switch(ctl.nightMode)) { vm.setNightMode(doc, !ctl.nightMode) })
+        add(com.chethan616.clearpdf.ui.glass.GlassMenuItem(stringResource(R.string.sheet_view_settings), LucideIcons.Glasses, section = reading, trail = MenuTrail.Chevron) { ctl.sheet = ViewerSheet.ViewSettings })
+        // the file itself: what the bar cannot hold
+        if (QuickTool.Print in layout.header) add(com.chethan616.clearpdf.ui.glass.GlassMenuItem(stringResource(R.string.sheet_print), LucideIcons.Printer, section = file) { vm.print(doc) })
         if (doc.isOffice) {
-            add(com.chethan616.clearpdf.ui.glass.GlassMenuItem(stringResource(R.string.office_export_pdf), LucideIcons.FilePdf) { vm.exportOffice(doc, "pdf") })
-            add(com.chethan616.clearpdf.ui.glass.GlassMenuItem(stringResource(R.string.office_save_as), LucideIcons.SaveAs) { ctl.sheet = ViewerSheet.SaveAs })
+            if (QuickTool.ExportPdf in layout.header) add(com.chethan616.clearpdf.ui.glass.GlassMenuItem(stringResource(R.string.office_export_pdf), LucideIcons.FilePdf, section = file) { vm.exportOffice(doc, "pdf") })
+            if (QuickTool.SaveAs in layout.header) add(com.chethan616.clearpdf.ui.glass.GlassMenuItem(stringResource(R.string.office_save_as), LucideIcons.SaveAs, section = file, trail = MenuTrail.Chevron) { ctl.sheet = ViewerSheet.SaveAs })
         } else {
-            add(com.chethan616.clearpdf.ui.glass.GlassMenuItem(stringResource(R.string.sheet_export_as), LucideIcons.FileOutput) { vm.openExport(doc) })
-            add(com.chethan616.clearpdf.ui.glass.GlassMenuItem(stringResource(R.string.common_tool_compress), LucideIcons.FileArchive) { vm.openCompress(doc) })
-            add(com.chethan616.clearpdf.ui.glass.GlassMenuItem(stringResource(R.string.common_tool_combine), LucideIcons.Combine) { vm.openCombine(doc) })
-            add(com.chethan616.clearpdf.ui.glass.GlassMenuItem(stringResource(R.string.common_tool_set_password), LucideIcons.FileLock2) { vm.openProtect(doc) })
-            add(com.chethan616.clearpdf.ui.glass.GlassMenuItem(stringResource(R.string.common_tool_create_pdf), LucideIcons.FilePlus2) { vm.openCreate() })
-            add(com.chethan616.clearpdf.ui.glass.GlassMenuItem(stringResource(R.string.common_save_copy), LucideIcons.Copy) { vm.saveCopyAs(doc) })
+            add(com.chethan616.clearpdf.ui.glass.GlassMenuItem(stringResource(R.string.common_save_copy), LucideIcons.Copy, section = file) { vm.saveCopyAs(doc) })
+            // the rest of the tools (Export, Compress, Combine, Protect, Create PDF) live in the
+            // dock's own More list, each under its group
         }
         doc.info.undo?.let { label -> add(com.chethan616.clearpdf.ui.glass.GlassMenuItem(stringResource(R.string.sheet_undo_action, label), LucideIcons.Undo2) { vm.undo(doc) }) }
         doc.info.redo?.let { label -> add(com.chethan616.clearpdf.ui.glass.GlassMenuItem(stringResource(R.string.sheet_redo_action, label), LucideIcons.Redo2) { vm.redo(doc) }) }
@@ -191,7 +198,7 @@ internal fun modifiedLabel(t: Long, yesterday: String, now: Long = System.curren
 fun ViewSettingsSheet(vm: AppViewModel, doc: OpenDocument) {
     val ctl = doc.controller
     PdfSheet(onDismiss = { ctl.sheet = ViewerSheet.None }) {
-        SheetBackHeader(stringResource(R.string.sheet_view_settings), onBack = { ctl.sheet = ViewerSheet.More })
+        SheetBackHeader(stringResource(R.string.sheet_view_settings), onBack = { ctl.sheet = ViewerSheet.None })
         // how the pages run, as three cards to choose from (the chosen one lit in blue)
         Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 4.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             LayoutChoice(LucideIcons.GalleryVerticalEnd, stringResource(R.string.sheet_continuous), doc.viewer.mode == PageMode.Continuous && !vm.twoPages && !vm.readingMode) {
@@ -282,7 +289,7 @@ fun BookmarksSheet(vm: AppViewModel, doc: OpenDocument) {
     var parent by remember { mutableStateOf(-1) }
     var renaming by remember { mutableStateOf<Int?>(null) }
     PdfSheet(onDismiss = { ctl.sheet = ViewerSheet.None }, maxHeightFraction = 0.69f, fill = true) {
-        SheetBackHeader(stringResource(R.string.sheet_bookmarks_contents), onBack = { ctl.sheet = ViewerSheet.More })
+        SheetBackHeader(stringResource(R.string.sheet_bookmarks_contents), onBack = { ctl.sheet = ViewerSheet.None })
         // Contents | Bookmarks: the glass segmented control
         com.chethan616.clearpdf.ui.glass.GlassTabs(
             listOf(
@@ -450,7 +457,7 @@ fun AttachmentsSheet(vm: AppViewModel, doc: OpenDocument) {
     // the document's own files, as the reference lists them (a comment's file is opened from the comment)
     val files = list.filter { !it.onPage }
     PdfSheet(onDismiss = { ctl.sheet = ViewerSheet.None }, maxHeightFraction = 0.7f) {
-        SheetBackHeader(stringResource(R.string.sheet_attachments), onBack = { ctl.sheet = ViewerSheet.More })
+        SheetBackHeader(stringResource(R.string.sheet_attachments), onBack = { ctl.sheet = ViewerSheet.None })
         LazyColumn(Modifier.padding(horizontal = 12.dp).clip(RoundedRectangle(22.dp)).background(cellFill())) {
             items(files) { a ->
                 SheetRow(LucideIcons.FileText, a.name, { ctl.sheet = ViewerSheet.None; vm.openAttachment(doc, a.name) }, tint = Candy.Grape, chevron = true)
@@ -543,64 +550,6 @@ object ToolHues {
     val comment = Color(0xFFF2A93B)
     val redact = Color(0xFFF2615C)
 }
-
-/** More tools: the tools that aren't on the bar, as a grid of tiles, and Customize toolbar. */
-@Composable
-fun MoreToolsSheet(vm: AppViewModel, doc: OpenDocument, anchor: Rect) {
-    val ctl = doc.controller
-    var customizing by remember { mutableStateOf(false) }
-    val config = androidx.compose.ui.platform.LocalConfiguration.current
-    val width = (config.screenWidthDp.dp - 24.dp).coerceAtLeast(236.dp).coerceAtMost(480.dp)
-    val maxHeight = (config.screenHeightDp.dp - 112.dp).coerceAtLeast(400.dp)
-    val slots = toolbarSlots(config.screenWidthDp)
-    val prefs = vm.quickToolbar
-    val tools = if (doc.isOffice) emptyList() else prefs.bar.drop(slots) + prefs.grid
-    com.chethan616.clearpdf.ui.glass.GlassMenuLayout(
-        anchor = anchor,
-        onDismiss = { if (customizing) customizing = false else ctl.sheet = ViewerSheet.None },
-        width = width,
-        maxHeight = maxHeight,
-    ) {
-        if (customizing) {
-            CustomizeToolbar(vm) { customizing = false }
-        } else {
-            Spacer(Modifier.height(6.dp))
-            Row(Modifier.fillMaxWidth().padding(start = 18.dp, end = 14.dp, bottom = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-                Text(stringResource(R.string.common_tool_more_tools), style = ClearType.Title.copy(fontSize = 18.sp), color = menuInk(), modifier = Modifier.weight(1f))
-                com.chethan616.clearpdf.ui.glass.GlassCircle(onClick = { ctl.sheet = ViewerSheet.None }, size = 36.dp, label = stringResource(R.string.ui_close_sheet)) {
-                    com.chethan616.clearpdf.ui.glass.GlassIcon(LucideIcons.X, null, Modifier.size(18.dp))
-                }
-            }
-            // Preserve the existing toolbar's four-column tool grid inside the same frosted menu card.
-            androidx.compose.foundation.layout.BoxWithConstraints(Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 2.dp)) {
-                val perRow = if (maxWidth >= 560.dp) 6 else if (maxWidth >= 400.dp) 5 else 4
-                val cell = maxWidth / perRow
-                Column {
-                    tools.chunked(perRow).forEach { row ->
-                        Row(verticalAlignment = Alignment.Top) {
-                            row.forEach { t ->
-                                ToolTile(t.icon, stringResource(t.title), t.hue, Modifier.width(cell)) {
-                                    ctl.sheet = ViewerSheet.None
-                                    vm.runQuickTool(doc, t)
-                                }
-                            }
-                        }
-                        Spacer(Modifier.height(10.dp))
-                    }
-                }
-            }
-            com.chethan616.clearpdf.ui.glass.GlassPill(
-                onClick = { customizing = true }, modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(), height = 48.dp,
-                label = stringResource(R.string.sheet_customize_toolbar),
-            ) {
-                Icon(LucideIcons.SlidersHorizontal, null, tint = menuInk(), modifier = Modifier.size(18.dp))
-                Text(stringResource(R.string.sheet_customize_toolbar), style = ClearType.BodyStrong, color = menuInk())
-            }
-            Spacer(Modifier.height(12.dp))
-        }
-    }
-}
-
 
 /** Save as: the formats the document's engine writes, each saved to Downloads. */
 /**

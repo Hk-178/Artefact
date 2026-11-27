@@ -4,6 +4,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -73,6 +75,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
+import com.chethan616.clearpdf.ui.LucideIcons
 import com.chethan616.clearpdf.ui.theme.Candy
 import com.chethan616.clearpdf.ui.theme.ClearType
 import com.chethan616.clearpdf.ui.theme.clear
@@ -313,7 +316,28 @@ fun GlassRow(
 }
 
 /** An item of a [GlassMenu]. */
-data class GlassMenuItem(val label: String, val icon: ImageVector? = null, val destructive: Boolean = false, val onClick: () -> Unit)
+data class GlassMenuItem(
+    val label: String,
+    val icon: ImageVector? = null,
+    val destructive: Boolean = false,
+    /** A small heading above this row, drawn when it differs from the row before it. */
+    val section: String? = null,
+    /** What the row's right edge shows: nothing, a chevron, or a switch. */
+    val trail: MenuTrail = MenuTrail.None,
+    val onClick: () -> Unit,
+)
+
+/** What a menu row shows at its right edge. */
+sealed interface MenuTrail {
+    /** Nothing: the row itself is the action. */
+    object None : MenuTrail
+
+    /** The row opens a sheet or a panel of its own. */
+    object Chevron : MenuTrail
+
+    /** An on/off, drawn as the app's glass switch; the row's action flips it. */
+    data class Switch(val on: Boolean) : MenuTrail
+}
 
 /**
  * A popover menu anchored to [anchor] (window bounds of its trigger): unfolds from the trigger's
@@ -341,8 +365,17 @@ fun MenuCard(modifier: Modifier = Modifier, shape: androidx.compose.ui.graphics.
     val c = clear
     val luminance = rememberGlassLuminance()
     GlassCard(
-        // unseen for the frame or two it takes to read what is behind it (see [GlassLuminance])
-        modifier.graphicsLayer { alpha = if (luminance == null || luminance.measured) 1f else 0f },
+        // unseen for the frame or two it takes to read what is behind it (see [GlassLuminance]);
+        // a hairline rim and a soft shadow keep its edge where the card crosses from a white page
+        // onto the dark ground behind it, where a wash alone has no edge at all
+        modifier
+            .graphicsLayer {
+                alpha = if (luminance == null || luminance.measured) 1f else 0f
+                shadowElevation = 10.dp.toPx()
+                this.shape = shape
+                clip = false
+            }
+            .border(1.dp, if (c.dark) Color.White.copy(alpha = 0.16f) else c.ink.copy(alpha = 0.10f), shape),
         shape = shape,
         wash = if (c.dark) MenuDarkWash else MenuLightWash,
         blur = 16.dp,
@@ -356,8 +389,92 @@ fun MenuCard(modifier: Modifier = Modifier, shape: androidx.compose.ui.graphics.
     }
 }
 
+/** The small heading that starts a menu's section: [GlassMenuItem.section] puts one above its row. */
 @Composable
-fun GlassMenu(anchor: Rect, onDismiss: () -> Unit, items: List<GlassMenuItem>) {
+internal fun MenuSectionLabel(text: String) {
+    Text(
+        text,
+        style = ClearType.Eyebrow,
+        color = LocalGlassInk.current.copy(alpha = 0.55f),
+        modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 10.dp, bottom = 2.dp),
+    )
+}
+
+/**
+ * A menu row's face, the same in every menu: the glyph first, its words beside it, then whatever the
+ * row's right edge shows ([GlassMenuItem.trail]) — a chevron for a row that opens its own sheet, the
+ * glass switch for an on/off, nothing for a row that simply acts.
+ *
+ * The row's own press belongs to the caller — or, when its right edge is the control ([onPress]),
+ * to the glyph and the words alone: a switch never consumes a tap, so a pressable row around one
+ * would run the row's action too and flip the setting twice (which is no flip at all).
+ */
+@Composable
+internal fun RowScope.MenuRowFace(item: GlassMenuItem, onPress: (() -> Unit)? = null) {
+    val ink = LocalGlassInk.current
+    val face: @Composable RowScope.() -> Unit = {
+        if (item.icon != null) {
+            Icon(
+                item.icon, null,
+                tint = if (item.destructive) Candy.Tomato else ink.copy(alpha = 0.85f),
+                modifier = Modifier.size(20.dp),
+            )
+            Spacer(Modifier.width(12.dp))
+        }
+        Text(
+            item.label,
+            style = ClearType.Body,
+            color = if (item.destructive) Candy.Tomato else ink,
+            modifier = Modifier.weight(1f),
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+        )
+    }
+    if (onPress != null) {
+        Row(Modifier.weight(1f).pressable(onPress), verticalAlignment = Alignment.CenterVertically, content = face)
+    } else {
+        face()
+    }
+    when (val trail = item.trail) {
+        MenuTrail.None -> Unit
+        MenuTrail.Chevron -> {
+            Spacer(Modifier.width(8.dp))
+            Icon(LucideIcons.ChevronRight, null, tint = ink.copy(alpha = 0.4f), modifier = Modifier.size(16.dp))
+        }
+        is MenuTrail.Switch -> {
+            Spacer(Modifier.width(10.dp))
+            GlassToggle(trail.on, { item.onClick() }, accent = Candy.Sky)
+        }
+    }
+}
+
+/** [items] as menu rows, each section's rows under its own small heading. */
+@Composable
+internal fun MenuRows(items: List<GlassMenuItem>, onChoose: (GlassMenuItem) -> Unit) {
+    var section: String? = null
+    items.forEach { item ->
+        item.section?.let { if (it != section) MenuSectionLabel(it) }
+        section = item.section
+        // a row whose switch is its right edge is pressed on its words alone (see [MenuRowFace])
+        val switching = item.trail is MenuTrail.Switch
+        Row(
+            Modifier.fillMaxWidth()
+                .then(if (switching) Modifier else Modifier.pressable({ onChoose(item) }))
+                .heightIn(min = 48.dp)
+                .padding(horizontal = 16.dp, vertical = 6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            MenuRowFace(item, onPress = if (switching) ({ item.onClick() }) else null)
+        }
+    }
+}
+
+@Composable
+fun GlassMenu(
+    anchor: Rect,
+    onDismiss: () -> Unit,
+    items: List<GlassMenuItem>,
+) {
     // opened from a round glass button: that button's glass becomes the menu (MorphButtonSurface)
     if (isMorphAnchor(anchor, LocalDensity.current)) {
         MorphButtonSurface(anchor, open = true, onDismiss = onDismiss, onGone = {}, items = items)
@@ -366,19 +483,11 @@ fun GlassMenu(anchor: Rect, onDismiss: () -> Unit, items: List<GlassMenuItem>) {
     var closing by remember { mutableStateOf(false) }
     GlassMenuLayout(anchor, onDismiss) {
         Spacer(Modifier.height(6.dp))
-        items.forEach { item ->
-            Row(
-                Modifier.fillMaxWidth().pressable({
-                    if (!closing) {
-                        closing = true
-                        onDismiss()
-                        android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({ item.onClick() }, MenuGoneMillis)
-                    }
-                }).padding(horizontal = 16.dp, vertical = 11.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(item.label, style = ClearType.BodyStrong, color = if (item.destructive) Candy.Tomato else LocalGlassInk.current, modifier = Modifier.weight(1f), maxLines = 1, overflow = TextOverflow.Ellipsis)
-                if (item.icon != null) Icon(item.icon, null, tint = if (item.destructive) Candy.Tomato else LocalGlassInk.current.copy(alpha = 0.65f), modifier = Modifier.size(19.dp))
+        MenuRows(items) { item ->
+            if (!closing) {
+                closing = true
+                onDismiss()
+                android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({ item.onClick() }, MenuGoneMillis)
             }
         }
         Spacer(Modifier.height(6.dp))

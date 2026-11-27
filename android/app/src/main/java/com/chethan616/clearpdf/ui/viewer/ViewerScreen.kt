@@ -103,7 +103,6 @@ fun ViewerScreen(vm: AppViewModel, doc: OpenDocument) {
     // More opened from its circle: the circle itself becomes the menu (MorphButtonSurface), hidden in the bar meanwhile
     var moreFromButton by remember { mutableStateOf(false) }
     var moreMorphUp by remember { mutableStateOf(false) }
-    var moreToolsMenuAnchor by remember { mutableStateOf(Rect.Zero) }
 
     // The system bars go with the viewer's bars.
     val statusBar = vm.statusBarInDocuments
@@ -479,16 +478,19 @@ fun ViewerScreen(vm: AppViewModel, doc: OpenDocument) {
                     if (vm.wordEditing == doc) {
                         WordEditDock(vm, doc)
                     } else if (ctl.tool == ViewerTool.None) {
+                        // one layout for the dock, the header's rows and More: no tool in two places
+                        val layout = toolLayout(
+                            docKind(doc), vm.quickToolbar.bar,
+                            toolbarSlots(
+                                androidx.compose.ui.platform.LocalConfiguration.current.screenWidthDp,
+                                com.chethan616.clearpdf.ui.theme.clear.clean,
+                            ),
+                        )
                         QuickToolbar(
-                            tools = QuickTool.barFor(doc, vm.quickToolbar.bar),
+                            tools = layout.dock,
                             onTool = { vm.runQuickTool(doc, it) },
-                            moreTools = if (doc.isOffice) emptyList() else vm.quickToolbar.grid,
-                            // Rearranging is deliberately kept as its dedicated editor; every
-                            // normal command now comes straight from the anchored GlassMenu.
-                            onCustomize = if (doc.isOffice) null else ({ anchor ->
-                                moreToolsMenuAnchor = anchor
-                                ctl.sheet = ViewerSheet.MoreTools
-                            }),
+                            labels = vm.toolbarLabels,
+                            more = layout.more,
                         )
                     } else {
                         ToolSubToolbar(vm, doc)
@@ -521,7 +523,6 @@ fun ViewerScreen(vm: AppViewModel, doc: OpenDocument) {
                 ViewerSheet.Bookmarks -> BookmarksSheet(vm, doc)
                 ViewerSheet.Attachments -> AttachmentsSheet(vm, doc)
                 ViewerSheet.Comments -> Unit
-                ViewerSheet.MoreTools -> MoreToolsSheet(vm, doc, moreToolsMenuAnchor)
                 ViewerSheet.SaveAs -> SaveAsSheet(vm, doc)
                 ViewerSheet.SlideNotes -> SlideNotesSheet(vm, doc)
                 ViewerSheet.Info -> DocumentInfoSheet(vm, doc)
@@ -552,7 +553,10 @@ fun ViewerScreen(vm: AppViewModel, doc: OpenDocument) {
         vm.replyPrompt?.takeIf { it.doc === doc }?.let { ReplySheet(vm, it) }
         vm.readAloud?.let { ReadAloudBar(doc, it) }
         if (ctl.goToPage) GoToPageDialog(doc, onDismiss = { ctl.goToPage = false })
-        if (ctl.pagesOpen) PagesScreen(vm, doc, onClose = { ctl.pagesOpen = false })
+        // the pages bar is one of the bottom bars: it names its actions only while they are named
+        if (ctl.pagesOpen) CompositionLocalProvider(LocalToolbarLabels provides vm.toolbarLabels) {
+            PagesScreen(vm, doc, onClose = { ctl.pagesOpen = false })
+        }
         }
     }
 }
